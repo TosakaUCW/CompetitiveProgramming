@@ -28,6 +28,7 @@ int main() {
 	}
 
 
-	printf("%.1lf",f[n]*60);
+	printf("%.1f",f[n]*60);
 	return 0;
 }
+

@@ -5,7 +5,7 @@ const int N=10000;
 const int M=500000;
 const int INF=2147483647;
 int n,m,start,num_edge,dis[N+5],head[M+5];
-int front,tail,queue[4*M];
+int front=1,tail,queue[4*M];
 bool vis[N+5];
 struct node {
     int next,to,dis;
@@ -26,14 +26,14 @@ void pop() {
 void push(int x) {
     if(vis[x])return;
     vis[x]=true;
-    queue[tail++]=x;
+    queue[++tail]=x;
 }
 
 void SPFA(int start) {
     Rep(i,1,n)dis[i]=INF;
     dis[start]=0;
     push(start);
-    while(front<tail) {
+    while(front<=tail) {
         int u=queue[front];
         pop();
         for(int i=head[u]; i; i=edge[i].next) {

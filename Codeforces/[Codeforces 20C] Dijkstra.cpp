@@ -5,7 +5,7 @@ const int N=100000;
 const int M=100000;
 const long long INF=1e12;
 int n,m,num_edge,head[M+5],pre[N+5];
-int front,tail,queue[100*M];
+int front=1,tail,queue[100*M];
 long long dis[N+5];
 bool vis[N+5];
 struct node {
@@ -28,7 +28,7 @@ void pop() {
 void push(int x) {
     if(vis[x])return;
     vis[x]=true;
-    queue[tail++]=x;
+    queue[++tail]=x;
 }
 
 void SPFA(int start) {

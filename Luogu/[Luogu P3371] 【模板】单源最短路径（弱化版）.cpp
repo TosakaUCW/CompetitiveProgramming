@@ -4,7 +4,7 @@
 const int N=10000;
 const int M=500000;
 const int INF=2147483647;
-int n,m,start,num_edge,dis[N+5],head[M+5];
+int n,m,start,num_edge,dis[N+5],head[N+5];
 int front=1,tail,queue[4*M];
 bool vis[N+5];
 struct node {

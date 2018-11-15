@@ -6,6 +6,7 @@
 
 const int N = 1e2;
 const int M = 25e3;
+
 int T, n, m, ans, a[N + 5];
 bool f[M + 5];
 

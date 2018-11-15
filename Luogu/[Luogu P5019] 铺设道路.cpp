@@ -4,6 +4,7 @@
 #define Rep(i, x, y) for (register int i = x; i <= y; i++)
 
 const int N=1e5;
+
 int n, a[N+5];
 long long ans;
 

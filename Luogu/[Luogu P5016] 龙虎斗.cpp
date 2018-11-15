@@ -5,6 +5,7 @@ typedef long long ll;
 
 const int N = 1e5;
 const ll INF = 1LL << 62;
+
 int n, m, p1, ans;
 ll s1, s2;
 ll c[N + 5];

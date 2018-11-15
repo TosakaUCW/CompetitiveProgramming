@@ -3,6 +3,7 @@
 #define Rep(i, x, y) for (register int i = x; i <= y; i++)
 
 const int N = 1e6;
+
 int n, ans;
 int v[N + 5], l[N + 5], r[N + 5];
 bool flag;

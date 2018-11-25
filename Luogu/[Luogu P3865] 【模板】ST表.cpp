@@ -15,25 +15,14 @@ struct SparseTable
 
     void init()
     {
-        Rep(i, 1, n)
-        {
-            int k = 0;
-            while ((1 << (k + 1)) <= i)
-                k++;
-            log2[i] = k;
-        }
-
+        log2[1] = 0;
+        Rep(i, 2, n)
+            log2[i] = log2[i / 2] + 1;
         Rep(i, 1, n)
             st[i][0] = a[i];
-
         Rep(j, 1, log2[n])
-            Rep(i, 1, n)
-        {
-            if (i + (1 << (j - 1)) <= n)
-                st[i][j] = std::min(st[i][j - 1], st[i + (1 << (j - 1))][j - 1]);
-            else
-                st[i][j] = st[i][j - 1];
-        }
+            Rep(i, 1, n - (1 << (j - 1)))
+                st[i][j] = std::min(st[i][j - 1], st[i + (1 << (j - 1))][j - 1];);
     }
 
     int query(int l, int r)

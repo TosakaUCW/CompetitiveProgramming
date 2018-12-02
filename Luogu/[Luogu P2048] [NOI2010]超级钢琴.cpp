@@ -17,7 +17,6 @@ ll ans, sum[N + 5];
 struct SparseTable
 {
     int log2[N + 5], st[N + 5][LOG2N + 5];
-
     void init()
     {
         log2[1] = 0;
@@ -27,13 +26,12 @@ struct SparseTable
             st[i][0] = i;
         Rep(j, 1, log2[n])
             Rep(i, 1, n - (1 << (j - 1)))
-        {
-            int x = st[i][j - 1];
-            int y = st[i + (1 << (j - 1))][j - 1];
-            st[i][j] = sum[x] > sum[y] ? x : y;
-        }
+            {
+                int x = st[i][j - 1];
+                int y = st[i + (1 << (j - 1))][j - 1];
+                st[i][j] = sum[x] > sum[y] ? x : y;
+            }
     }
-
     int query(int l, int r)
     {
         int k = log2[r - l + 1];

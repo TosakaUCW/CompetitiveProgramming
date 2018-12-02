@@ -4,7 +4,7 @@
 #define Rep(i, x, y) for (register int i = x; i <= y; i++)
 
 const int N = 1e5;
-const int LOG2N = 17;
+const int LOG2N = 20;
 
 int n, m;
 int a[N + 5];
@@ -22,13 +22,19 @@ struct SparseTable
             st[i][0] = a[i];
         Rep(j, 1, log2[n])
             Rep(i, 1, n - (1 << (j - 1)))
-                st[i][j] = std::min(st[i][j - 1], st[i + (1 << (j - 1))][j - 1];);
+            {
+                int x = st[i][j - 1];
+                int y = st[i + (1 << (j - 1))][j - 1];
+                st[i][j] = std::max(x, y);
+            }
     }
 
     int query(int l, int r)
     {
-        int k = log2[r - l];
-        return std::min(st[l][k], st[r - (1 << k) + 1][k]);
+        int k = log2[r - l + 1];
+        int x = st[l][k];
+        int y = st[r - (1 << k) + 1][k];
+        return std::max(x, y);
     }
 } rmq;
 
@@ -43,7 +49,7 @@ int main()
         int l, r;
         scanf("%d%d", &l, &r);
         int ans = rmq.query(l, r);
-        printf("%d ", ans);
+        printf("%d\n", ans);
     }
     return 0;
 }

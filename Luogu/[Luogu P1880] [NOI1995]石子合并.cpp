@@ -1,32 +1,44 @@
 #include <stdio.h>
-#include <memory.h>
 #include <algorithm>
 
-#define N 100
-#define INF 0x7f7f7f7f
-#define REP(i,x,y) for(int i=x;i<=y;i++)
+#define Rep(i, x, y) for (register int i = x; i <= y; i++)
 
-int n,m,a[2*N+5],s[2*N+5],f[2*N+5][2*N+5],g[2*N+5][2*N+5],min=INF,max=-INF;
+const int N = 100;
+const int INF = 1 << 30;
 
-int main() {
-	scanf("%d",&n),m=2*n-1;
-	REP(i,1,n)scanf("%d",&a[i]),a[i+n]=a[i];
-	REP(i,1,m)s[i]=s[i-1]+a[i];
+int n, min, max;
+int a[2 * N + 5], sum[2 * N + 5];
+int f[2 * N + 5][2 * N + 5], g[2 * N + 5][2 * N + 5];
 
-	for(int i=m; i>=1; i--)
-		REP(j,i+1,i+n-1) {
-		g[i][j]=INF;
-		REP(k,i,j-1) {
-			f[i][j]=std::max(f[i][j],f[i][k]+f[k+1][j]+s[j]-s[i-1]);
-			g[i][j]=std::min(g[i][j],g[i][k]+g[k+1][j]+s[j]-s[i-1]);
-		}
-	}
-
-	REP(i,1,n) {
-		min=std::min(min,g[i][i+n-1]);
-		max=std::max(max,f[i][i+n-1]);
-	}
-
-	printf("%d\n%d",min,max);
+int main()
+{
+    scanf("%d", &n);
+    Rep(i, 1, n)
+    {
+        scanf("%d", &a[i]);
+        a[i + n] = a[i];
+    }
+    Rep(i, 1, 2 * n)
+        sum[i] = sum[i - 1] + a[i];
+    Rep(len, 2, n)
+        Rep(i, 1, 2 * n - len + 1)
+        {
+            int j = i + len - 1;
+            f[i][j] = INF;
+            Rep(k, i, j - 1)
+            {
+                f[i][j] = std::min(f[i][j], f[i][k] + f[k + 1][j]);
+                g[i][j] = std::max(g[i][j], g[i][k] + g[k + 1][j]);
+            }
+            f[i][j] += sum[j] - sum[i - 1];
+            g[i][j] += sum[j] - sum[i - 1];
+        }
+    min = INF;
+    Rep(i, 1, n)
+    {
+        min = std::min(min, f[i][i + n - 1]);
+        max = std::max(max, g[i][i + n - 1]);
+    }
+    printf("%d\n%d", min, max);
+    return 0;
 }
-

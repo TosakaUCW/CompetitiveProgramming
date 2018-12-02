@@ -10,6 +10,7 @@ int n, m, a[N + 5], rank[N + 5], ans;
 int h, t, queue[10 * M + 5];
 int num_edge, head[N + 5], ind[N + 5];
 bool vis[N + 5], used[N + 5][N + 5];
+
 struct Node
 {
     int next, to;

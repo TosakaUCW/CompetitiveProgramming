@@ -6,7 +6,7 @@ const int LOGN = 20;
 
 int n, num_edge, head[N];
 int ans[N], fa[LOGN + 5][N], val[N];
-long long dis[N];
+long long depth[N];
 
 struct Node
 {
@@ -30,7 +30,7 @@ void dfs_1(int u)
         int v = edge[i].to;
         int dist = edge[i].dist;
         fa[0][v] = u;
-        dis[v] = dis[u] + dist;
+        depth[v] = depth[u] + dist;
         dfs_1(v);
     }
 }
@@ -39,7 +39,7 @@ void solve(int u)
 {
     int x = u;
     for (int i = LOGN; i >= 0; i--)
-        if (fa[i][x] and dis[u] - dis[fa[i][x]] <= val[u])
+        if (fa[i][x] and depth[u] - depth[fa[i][x]] <= val[u])
             x = fa[i][x];
     if (x != 1)
         ans[fa[0][x]]--;

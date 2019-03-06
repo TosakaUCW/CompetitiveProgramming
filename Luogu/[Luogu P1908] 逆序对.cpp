@@ -1,32 +1,55 @@
-#include<stdio.h>
+#include <stdio.h>
+#include <algorithm>
 
-#define Rep(i,x,y) for(register int i=x;i<=y;i++)
+const int N = 5e5 + 5;
 
-const int N = 500000;
-int n,ans,a[N+5];
+int n;
+long long ans;
 
-void merge(int l,int m,int r) {
-	int tmp[N+5];
-	int x=l,y=m+1,k=x;
-	while (k<=r)
-		if (y>r or x<=m and a[x]<=a[y])tmp[k++]=a[x++];
-		else tmp[k++]=a[y++],ans+=m-x+1;
-	Rep(i,l,r) a[i]=tmp[i];
+struct Binary_Indexed_Tree
+{
+    int c[N];
+    int lowbit(int x)
+    {
+        return x & (-x);
+    }
+    void add(int k, int x)
+    {
+        for (int i = k; i <= n; i += lowbit(i))
+            c[i] += x;
+    }
+    int query(int k)
+    {
+        int res = 0;
+        for (int i = k; i; i -= lowbit(i))
+            res += c[i];
+        return res;
+    }
+} BIT;
+
+struct Node
+{
+    int val, pos;
+} a[N];
+
+bool cmp(Node a, Node b)
+{
+    if (a.val != b.val)
+        return a.val > b.val;
+    return a.pos > b.pos;
 }
 
-void merge_sort(int l,int r) {
-	if (l<r) {
-		int m=(l+r)/2;
-		merge_sort(l,m);
-		merge_sort(m+1,r);
-		merge(l,m,r);
-	}
-}
-
-int main() {
-	scanf("%d",&n);
-	Rep(i,1,n)scanf("%d",&a[i]);
-	merge_sort(1,n);
-	printf("%d",ans);
-	return 0;
+int main()
+{
+    scanf("%d", &n);
+    for (int i = 1; i <= n; i++)
+        scanf("%d", &a[i].val), a[i].pos = i;
+    std::sort(a + 1, a + 1 + n, cmp);
+    for (int i = 1; i <= n; i++)
+    {
+        ans += BIT.query(a[i].pos);
+        BIT.add(a[i].pos, 1);
+    }
+    printf("%lld", ans);
+    return 0;
 }

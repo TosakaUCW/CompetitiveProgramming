@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <algorithm>
 
-#define Rep(i, x, y) for (register int i = x; i <= y; i++)
-
 const int N = 1e5;
 const int LOG2N = 20;
 
@@ -16,12 +14,12 @@ struct SparseTable
     void init()
     {
         log2[1] = 0;
-        Rep(i, 2, n)
+        for (int i = 2; i <= n; i++)
             log2[i] = log2[i / 2] + 1;
-        Rep(i, 1, n)
+        for (int i = 1; i <= n; i++)
             st[i][0] = a[i];
-        Rep(j, 1, log2[n])
-            Rep(i, 1, n - (1 << (j - 1)))
+        for (int j = 1; j <= log2[n]; j++)
+            for (int i = 1; i <= n - (1 << (j - 1)); i++)
             {
                 int x = st[i][j - 1];
                 int y = st[i + (1 << (j - 1))][j - 1];
@@ -41,10 +39,10 @@ struct SparseTable
 int main()
 {
     scanf("%d%d", &n, &m);
-    Rep(i, 1, n)
+    for (int i = 1; i <= n; i++)
         scanf("%d", &a[i]);
     rmq.init();
-    Rep(i, 1, m)
+    for (int i = 1; i <= m; i++)
     {
         int l, r;
         scanf("%d%d", &l, &r);

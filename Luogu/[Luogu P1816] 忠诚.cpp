@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <algorithm>
 
-#define Rep(i, x, y) for (register int i = x; i <= y; i++)
-
 const int N = 1e5;
 const int LOG2N = 17;
 
@@ -15,7 +13,7 @@ struct SparseTable
 
     void init()
     {
-        Rep(i, 1, n)
+        for (int i = 1; i <= n; i++)
         {
             int k = 0;
             while ((1 << (k + 1)) <= i)
@@ -23,17 +21,15 @@ struct SparseTable
             log2[i] = k;
         }
 
-        Rep(i, 1, n)
+        for (int i = 1; i <= n; i++)
             st[i][0] = a[i];
 
-        Rep(j, 1, log2[n])
-            Rep(i, 1, n)
-        {
-            if (i + (1 << (j - 1)) <= n)
-                st[i][j] = std::min(st[i][j - 1], st[i + (1 << (j - 1))][j - 1]);
-            else
-                st[i][j] = st[i][j - 1];
-        }
+        for (int j = 1; j <= log2[n]; j++)
+            for (int i = 1; i <= n; i++)
+                if (i + (1 << (j - 1)) <= n)
+                    st[i][j] = std::min(st[i][j - 1], st[i + (1 << (j - 1))][j - 1]);
+                else
+                    st[i][j] = st[i][j - 1];
     }
 
     int query(int l, int r)
@@ -46,10 +42,10 @@ struct SparseTable
 int main()
 {
     scanf("%d%d", &n, &m);
-    Rep(i, 1, n)
+    for (int i = 1; i <= n; i++)
         scanf("%d", &a[i]);
     rmq.init();
-    Rep(i, 1, m)
+    for (int i = 1; i <= m; i++)
     {
         int l, r;
         scanf("%d%d", &l, &r);

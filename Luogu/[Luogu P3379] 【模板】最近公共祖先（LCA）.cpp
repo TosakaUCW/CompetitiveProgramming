@@ -2,8 +2,6 @@
 #include <stdio.h>
 #include <algorithm>
 
-#define Rep(i, x, y) for (register int i = x; i <= y; i++)
-
 const int N = 5e5;
 const int LOG2N = 23;
 
@@ -21,7 +19,7 @@ struct LeastCommonAncestor
 
     void prepare()
     {
-        Rep(i, 1, n)
+        for (int i = 1; i <= n; i++)
             log2[i] = log2[i - 1] + (1 << log2[i - 1] == i);
         dfs(s, 0);
     }
@@ -72,7 +70,7 @@ void add_edge(int from, int to)
 int main()
 {
     scanf("%d%d%d", &n, &m, &s);
-    Rep(i, 2, n)
+    for (int i = 2; i <= n; i++)
     {
         int u, v;
         scanf("%d%d", &u, &v);
@@ -80,7 +78,7 @@ int main()
         add_edge(v, u);
     }
     lca.prepare();
-    Rep(i, 1, m)
+    for (int i = 1; i <= m; i++)
     {
         int x, y;
         scanf("%d%d", &x, &y);

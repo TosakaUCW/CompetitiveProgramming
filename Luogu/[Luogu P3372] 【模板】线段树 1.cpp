@@ -1,105 +1,104 @@
-#include <math.h>
 #include <stdio.h>
+#include <algorithm>
 
 typedef long long ll;
-#define Rep(i, x, y) for (register int i = x; i <= y; i++)
 
-const int N = 1e5;
-const int BLOCKSIZE = 317;
+const int N = 4e5 + 5;
+const int M = 8e5 + 5;
 
 int n, m;
+int a[N];
 
-struct Block
+class Segment_Tree
 {
-    int num, size;
-    ll a[N + 5], belong[N + 5];
-    ll lazy[BLOCKSIZE + 5], sum[BLOCKSIZE + 5];
-    int l[BLOCKSIZE + 5], r[BLOCKSIZE + 5];
-    void init()
+#define ls (p << 1)
+#define rs (p << 1 | 1)
+
+  private:
+    struct Node
     {
-        size = sqrt(n);
-        num = n / size;
-        if (n % size)
-            num++;
-        Rep(i, 1, num)
+        int l, r;
+        long long sum, lazy;
+    } t[N << 2];
+    void push_up(int p) { t[p].sum = t[ls].sum + t[rs].sum; }
+    void push_down(int p)
+    {
+        if (t[p].lazy)
         {
-            l[i] = (i - 1) * size + 1;
-            r[i] = i * size;
-        }
-        r[num] = n;
-        Rep(i, 1, n)
-        {
-            belong[i] = (i - 1) / size + 1;
-            sum[belong[i]] += a[i];
+            t[ls].sum += t[p].lazy * (t[ls].r - t[ls].l + 1);
+            t[rs].sum += t[p].lazy * (t[rs].r - t[rs].l + 1);
+            t[ls].lazy += t[p].lazy;
+            t[rs].lazy += t[p].lazy;
+            t[p].lazy = 0;
         }
     }
-    void update(int x, int y, int num)
+
+  public:
+    void build(int p, int l, int r)
     {
-        if (belong[x] == belong[y])
-            Rep(i, x, y)
-            {
-                a[i] += num;
-                sum[belong[i]] += num;
-            }
-        else
+        t[p].l = l, t[p].r = r;
+        if (t[p].l == t[p].r)
         {
-            Rep(i, x, r[belong[x]])
-            {
-                a[i] += num;
-                sum[belong[i]] += num;
-            }
-            Rep(i, l[belong[y]], y)
-            {
-                a[i] += num;
-                sum[belong[i]] += num;
-            }
-            Rep(i, belong[x] + 1, belong[y] - 1)
-            {
-                lazy[i] += num;
-                sum[i] += num * size;
-            }
+            t[p].sum = a[l];
+            return;
         }
+        int mid = (l + r) >> 1;
+        build(ls, l, mid);
+        build(rs, mid + 1, r);
+        push_up(p);
     }
-    ll query(int x, int y)
+    void modify(int p, int l, int r, int x, int y, int val)
     {
-        ll ans = 0;
-        if (belong[x] == belong[y])
-            Rep(i, x, y)
-                ans += a[i] + lazy[belong[i]];
-        else
+
+        if (x <= l and r <= y)
         {
-            Rep(i, x, r[belong[x]])
-                ans += a[i] + lazy[belong[i]];
-            Rep(i, l[belong[y]], y)
-                ans += a[i] + lazy[belong[i]];
-            Rep(i, belong[x] + 1, belong[y] - 1)
-                ans += sum[i];
+            t[p].sum += val * (r - l + 1);
+            t[p].lazy += val;
+            return;
         }
+        push_down(p);
+        int mid = (l + r) >> 1;
+        if (x <= mid)
+            modify(ls, l, mid, x, y, val);
+        if (mid < y)
+            modify(rs, mid + 1, r, x, y, val);
+        push_up(p);
+    }
+    ll query(int p, int l, int r, int x, int y)
+    {
+        if (x <= l and r <= y)
+            return t[p].sum;
+        push_down(p);
+        int mid = (l + r) >> 1;
+        long long ans = 0;
+        if (x <= mid)
+            ans += query(ls, l, mid, x, y);
+        if (mid < y)
+            ans += query(rs, mid + 1, r, x, y);
         return ans;
     }
-} block;
+} T;
 
 int main()
 {
     scanf("%d%d", &n, &m);
-    Rep(i, 1, n)
-        scanf("%lld", &block.a[i]);
-    block.init();
-    Rep(i, 1, m)
+    for (int i = 1; i <= n; i++)
+        scanf("%d", &a[i]);
+    T.build(1, 1, n);
+    for (int i = 1; i <= m; i++)
     {
-        int opt;
-        scanf("%d", &opt);
+        int opt, x, y;
+        scanf("%d%d%d", &opt, &x, &y);
         if (opt == 1)
         {
-            int x, y, num;
-            scanf("%d%d%d", &x, &y, &num);
-            block.update(x, y, num);
+            int k;
+            scanf("%d", &k);
+            T.modify(1, 1, n, x, y, k);
         }
-        if (opt == 2)
+        else
         {
-            int x, y;
-            scanf("%d%d", &x, &y);
-            printf("%lld\n", block.query(x, y));
+            ll ans = T.query(1, 1, n, x, y);
+            printf("%lld\n", ans);
         }
     }
     return 0;

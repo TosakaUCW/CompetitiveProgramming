@@ -5,11 +5,11 @@ typedef long long LL;
 
 class Linear_Base
 {
-  private:
+private:
     static const int LogN = 50;
     LL a[LogN + 5];
 
-  public:
+public:
     Linear_Base() { memset(a, 0, sizeof a); }
     void insert(LL x)
     {

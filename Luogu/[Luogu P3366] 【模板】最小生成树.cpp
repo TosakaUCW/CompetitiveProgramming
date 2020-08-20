@@ -1,59 +1,49 @@
 #include <stdio.h>
 #include <algorithm>
+#include <memory.h>
 
-#define N 5000
-#define M 200000
-#define REP(i,x,y) for(register int i=x;i<=y;i++)
+const int N = 1e7 + 5;
 
-struct Node {
-	int u,v,dis;
-} edge[M+5];
+int n, m, k, ans;
+int fa[N];
 
-int n,m,tot,k,father[N+5];
+struct Node
+{
+    int u, v, dis;
+    bool friend operator<(Node a, Node b) { return a.dis < b.dis; }
+} edge[N];
 
-inline int find(int x) {
-	while(x!=father[x]) x=father[x]=father[father[x]];
-	return x;
+int find(int x) { return fa[x] == x ? x : fa[x] = find(fa[x]); }
+
+int read()
+{
+    int x = 0, f = 1;
+    char ch = getchar();
+    while ('0' > ch or ch > '9')
+        f = ch == '-' ? -1 : 1, ch = getchar();
+    while ('0' <= ch and ch <= '9')
+        x = x * 10 + ch - 48, ch = getchar();
+    return x * f;
 }
 
-inline void unite(int son,int dad) {
-	father[son]=dad;
-}
-
-inline void add_edge(int k,int u,int v,int dis) {
-	edge[k].u=u;
-	edge[k].v=v;
-	edge[k].dis=dis;
-}
-
-inline bool cmp(Node a,Node b) {
-	return a.dis<b.dis;
-}
-
-void kruskal() {
-	REP(i,1,n)father[i]=i;
-	std::sort(edge+1,edge+1+m,cmp);
-	REP(i,1,m) {
-		int find_u=find(edge[i].u);
-		int find_v=find(edge[i].v);
-		if(find_u!=find_v) {
-			unite(find_u,find_v);
-			tot+=edge[i].dis;
-			k++;
-			if(k==n-1)break;
-		}
-	}
-}
-
-int main() {
-	scanf("%d%d",&n,&m);
-	REP(i,1,m) {
-		int u,v,dis;
-		scanf("%d%d%d",&u,&v,&dis);
-		add_edge(i,u,v,dis);
-	}
-	kruskal();
-	if(k==n-1)printf("%d",tot);
-	else printf("orz");
-	return 0;
+int main()
+{
+    n = read(), m = read();
+    for (int i = 1; i <= m; i++)
+        edge[i].u = read(), edge[i].v = read(), edge[i].dis = read();
+    std::sort(edge + 1, edge + 1 + m);
+    for (int i = 1; i <= n; i++)
+        fa[i] = i;
+    for (int i = 1; i <= m and k < n - 1; i++)
+    {
+        int dx = find(edge[i].u);
+        int dy = find(edge[i].v);
+        if (dx != dy)
+            ans += edge[i].dis, fa[dx] = dy, k++;
+    }
+    if (k != n - 1)
+        puts("orz");
+    else
+        printf("%d", ans);
+    return 0;
 }

@@ -1,108 +1,94 @@
-#include <ctype.h>
-#include <memory.h>
-#include <stdio.h>
 #include <queue>
-
-#define Rep(i, x, y) for (register int i = x; i <= y; i++)
+#include <stdio.h>
+#include <algorithm>
+#include <memory.h>
 
 const int N = 2e3 + 5;
 const int M = 6e3 + 5;
 
-int T, n, m, num_edge;
-int cnt[N], dis[N], head[N];
-bool inQueue[N];
-std::queue<int> Q;
+int n, m;
+int head[N], num_edge;
+int dis[N], inQcnt[N];
+bool inQ[N];
 
 struct Node
 {
     int next, to, dis;
 } edge[M];
 
-inline void read(int &x)
+int read()
 {
-    int c = getchar();
-    bool f = false;
-    for (x = 0; !isdigit(c); c = getchar())
-        if (c == '-')
-            f = true;
-    for (; isdigit(c); c = getchar())
-        x = x * 10 + c - '0';
-    if (f)
-        x = -x;
+    int x = 0, f = 1;
+    char ch = getchar();
+    while ('0' > ch or ch > '9')
+        f = ch == '-' ? -1 : 1, ch = getchar();
+    while ('0' <= ch and ch <= '9')
+        x = x * 10 + ch - 48, ch = getchar();
+    return x * f;
 }
 
-inline void add_edge(int u, int v, int dist)
+void add_edge(int u, int v, int dis)
 {
     edge[++num_edge].next = head[u];
-    edge[num_edge].to = v;
-    edge[num_edge].dis = dist;
     head[u] = num_edge;
+    edge[num_edge].to = v;
+    edge[num_edge].dis = dis;
 }
 
-inline void SPFA(int s)
+bool SPFA()
 {
-    memset(cnt, 0, sizeof cnt);
+    memset(inQ, false, sizeof inQ);
+    memset(inQcnt, 0, sizeof inQcnt);
     memset(dis, 0x3f, sizeof dis);
-    memset(inQueue, false, sizeof inQueue);
+    std::queue<int> Q;
     while (!Q.empty())
         Q.pop();
-    Q.push(s);
-    inQueue[s] = true, dis[s] = 0;
+    Q.push(1);
+    inQ[1] = true, dis[1] = 0;
     while (!Q.empty())
     {
         int u = Q.front();
+        inQ[u] = false;
         Q.pop();
-        inQueue[u] = false;
         for (int i = head[u]; i; i = edge[i].next)
         {
             int v = edge[i].to;
-            int dist = edge[i].dis;
-            if (dis[v] > dis[u] + dist)
+            if (dis[v] > dis[u] + edge[i].dis)
             {
-                cnt[v] = cnt[u] + 1;
-                if (cnt[v] >= n)
+                dis[v] = dis[u] + edge[i].dis;
+                if (!inQ[v])
                 {
-                    puts("YE5");
-                    return;
-                }
-                dis[v] = dis[u] + dist;
-                if (!inQueue[v])
-                {
+                    inQ[v] = true;
                     Q.push(v);
-                    inQueue[v] = true;
-                }
-            }
-            else if (dis[v] == dis[u] + dist and dist > 0)
-            {
-                cnt[v] += cnt[u];
-                if (cnt[v] >= n)
-                {
-                    puts("YE5");
-                    return;
+                    inQcnt[v]++;
+                    if (inQcnt[v] >= n)
+                        return true;
                 }
             }
         }
     }
-    puts("N0");
+    return false;
 }
 
 int main()
 {
-    read(T);
+    int T = read();
     while (T--)
     {
         num_edge = 0;
         memset(head, 0, sizeof head);
-        read(n), read(m);
-        Rep(i, 1, m)
+        n = read(), m = read();
+        for (int i = 1, u, v, dis; i <= m; i++)
         {
-            int u, v, dist;
-            read(u), read(v), read(dist);
-            add_edge(u, v, dist);
-            if (dist >= 0)
-                add_edge(v, u, dist);
+            u = read(), v = read(), dis = read();
+            add_edge(u, v, dis);
+            if (dis >= 0)
+                add_edge(v, u, dis);
         }
-        SPFA(1);
+        if (SPFA())
+            puts("YES");
+        else
+            puts("NO");
     }
     return 0;
 }

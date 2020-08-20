@@ -1,59 +1,71 @@
-#include <memory.h>
 #include <stdio.h>
 #include <algorithm>
-
-#define Rep(i, x, y) for (register int i = x; i <= y; i++)
+#include <memory.h>
+#include <stack>
 
 const int N = 1e5 + 5;
 const int M = 1e6 + 5;
 
-int n, m, x[N], y[N];
-int ans, sum[N], f[N];
-int time, top, Bcnt;
-int num_edge, v[N], head[N];
-int dfn[N], low[N], stack[N], belong[N];
-bool instack[N];
+int n, m;
+int val[N], head[N], num_edge;
+int u[N], v[N];
+int sum[N];
+
+int dfn[N], low[N], timer;
+std::stack<int> S;
+int num_scc, belong[N];
+bool inStack[N];
+
+int f[N], ans;
 
 struct Node
 {
-    int from, to, next;
+    int next, to;
 } edge[M];
+
+int read()
+{
+    int x = 0, f = 1;
+    char ch = getchar();
+    while ('0' > ch or ch > '9')
+        f = ch == '-' ? -1 : 1, ch = getchar();
+    while ('0' <= ch and ch <= '9')
+        x = x * 10 + ch - 48, ch = getchar();
+    return x * f;
+}
 
 void add_edge(int u, int v)
 {
-    num_edge++;
-    edge[num_edge].next = head[u];
-    edge[num_edge].from = u;
-    edge[num_edge].to = v;
+    edge[++num_edge].next = head[u];
     head[u] = num_edge;
+    edge[num_edge].to = v;
 }
 
-void Tarjan(int u)
+void tarjan(int u)
 {
-    dfn[u] = low[u] = ++time;
-    stack[++top] = u, instack[u] = true;
+    dfn[u] = low[u] = ++timer;
+    S.push(u);
+    inStack[u] = true;
     for (int i = head[u]; i; i = edge[i].next)
     {
         int v = edge[i].to;
         if (!dfn[v])
-        {
-            Tarjan(v);
-            low[u] = std::min(low[u], low[v]);
-        }
-        else if (instack[v])
+            tarjan(v), low[u] = std::min(low[u], low[v]);
+        else if (inStack[v])
             low[u] = std::min(low[u], low[v]);
     }
-    if (dfn[u] == low[u])
+    if (low[u] == dfn[u])
     {
-        Bcnt++;
-        int k;
+        ++num_scc;
+        int x;
         do
         {
-            k = stack[top--];
-            instack[k] = false;
-            belong[k] = Bcnt;
-            sum[Bcnt] += v[k];
-        } while (k != u);
+            x = S.top();
+            sum[num_scc] += val[x];
+            belong[x] = num_scc;
+            inStack[x] = false;
+            S.pop();
+        } while (x != u);
     }
 }
 
@@ -75,27 +87,21 @@ void dfs(int u)
 
 int main()
 {
-    scanf("%d%d", &n, &m);
-    Rep(i, 1, n)
-        scanf("%d", &v[i]);
-    Rep(i, 1, m)
-    {
-        scanf("%d%d", &x[i], &y[i]);
-        add_edge(x[i], y[i]);
-    }
-    Rep(i, 1, n)
-    {
-        if (!dfn[i])
-            Tarjan(i);
-    }
-    memset(head, 0, sizeof(head));
-    memset(edge, 0, sizeof(edge));
-    Rep(i, 1, m)
-    {
-        if (belong[x[i]] != belong[y[i]])
-            add_edge(belong[x[i]], belong[y[i]]);
-    }
-    Rep(i, 1, Bcnt)
+    n = read(), m = read();
+    for (int i = 1; i <= n; i++)
+        val[i] = read();
+    for (int i = 1; i <= m; i++)
+        u[i] = read(), v[i] = read(), add_edge(u[i], v[i]);
+    for (int u = 1; u <= n; u++)
+        if (!dfn[u])
+            tarjan(u);
+    memset(head, 0, sizeof head);
+    memset(edge, 0, sizeof edge);
+    num_edge = 0;
+    for (int i = 1; i <= m; i++)
+        if (belong[u[i]] != belong[v[i]])
+            add_edge(belong[u[i]], belong[v[i]]);
+    for (int i = 1; i <= num_scc; i++)
         dfs(i);
     printf("%d", ans);
     return 0;

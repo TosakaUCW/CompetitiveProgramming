@@ -1,34 +1,54 @@
 #include <stdio.h>
 #include <algorithm>
 
-#define REP(i,x,y) for(int i=x;i<=y;i++)
-#define N 100000
+const int N = 1e5 + 5;
 
-int n,a[N+5],f[N+5],len;
-int d[N+5];
+int n;
+int a[N], s1[N], len1, s2[N], len2;
 
-int main() {
-	while(~scanf("%d",&a[++n]));
-	//N^2过百万 得用麻烦点的nlogn做法
-	//最长下降子序列
-	//d[i]表示长度为i的下降子序列末尾元素的最小值
-	d[1]=-a[1],len=1;
-	REP(i,2,n) {
-		if(-a[i]>=d[len])d[++len]=-a[i];
-		else {
-			int j=std::upper_bound(d+1,d+len,-a[i])-d;
-			d[j]=-a[i];
-		}
-	}
-	printf("%d\n",len-1);
-	//最长上升子序列 
-	d[1]=a[1],len=1;
-	REP(i,2,n)
-	if (a[i]>d[len]) d[++len]=a[i];
-	else {
-		int j=std::lower_bound(d+1,d+len+1,a[i])-d;
-		d[j]=a[i];
-	}
-	printf("%d",len);
-	return 0;
+int main()
+{
+    while (scanf("%d", &a[++n]) != EOF)
+        ;
+    n--;
+    s1[1] = s2[1] = a[1], len1 = len2 = 1;
+    for (int i = 2; i <= n; i++)
+    {
+        if (s1[len1] >= a[i])
+            s1[++len1] = a[i];
+        else
+        {
+            int L = 1, R = len1, res;
+            while (L <= R)
+            {
+                int mid = (L + R) / 2;
+                if (s1[mid] < a[i])
+                    res = mid, R = mid - 1;
+                else
+                    L = mid + 1;
+            }
+            s1[res] = a[i];
+        }
+        if (s2[len2] < a[i])
+            s2[++len2] = a[i];
+        else
+        {
+            int L = 1, R = len2, res;
+            while (L <= R)
+            {
+                int mid = (L + R) / 2;
+                if (s2[mid] >= a[i])
+                    res = mid, R = mid - 1;
+                else
+                    L = mid + 1;
+            }
+            s2[res] = a[i];
+        }
+    }
+    printf("%d\n%d", len1, len2);
+    return 0;
 }
+/*
+8
+38 27 55 30 29 70 58 65
+*/

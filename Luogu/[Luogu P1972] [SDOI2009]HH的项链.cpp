@@ -1,93 +1,72 @@
-#include <math.h>
 #include <stdio.h>
 #include <algorithm>
+#include <memory.h>
 
-const int N = 5e5 + 5;
-const int M = 5e5 + 5;
-const int K = 1e6 + 5;
+const int N = 1e6 + 5;
 
-int n, m, k, res;
-int a[N], ans[M], cnt[K], belong[N];
-int L = 1, R;
-int size;
+int n;
+int a[N];
+int last[N], next[N];
 
-struct Node
+int read()
 {
-    int l, r, id;
-    bool friend operator<(Node a, Node b)
-    {
-        if (belong[a.l] == belong[b.l])
-        {
-            if (belong[a.l] & 1)
-                return a.r < b.r;
-            return a.r > b.r;
-        }
-        return belong[a.l] < belong[b.l];
-    }
-} query[M];
-
-inline int read()
-{
-    int res = 0;
-    char c = getchar();
-    while (c < '0' or c > '9')
-        c = getchar();
-
-    while (c >= '0' and c <= '9')
-    {
-        res = res * 10 + c - '0';
-        c = getchar();
-    }
-    return res;
+    int x = 0, f = 1;
+    char ch = getchar();
+    while ('0' > ch or ch > '9')
+        f = ch == '-' ? -1 : 1, ch = getchar();
+    while ('0' <= ch and ch <= '9')
+        x = x * 10 + ch - 48, ch = getchar();
+    return x * f;
 }
 
-inline void write(int x)
+void write(int x)
 {
     if (x < 0)
-    {
-        putchar('-');
-        write(-x);
-        return;
-    }
+        x = -x, putchar('-');
     if (x >= 10)
         write(x / 10);
-    putchar(x % 10 + '0');
+    putchar('0' + x % 10);
 }
 
-inline void update(int i, int opt)
+struct HJT_Tree
 {
-    if (opt == 1)
-        res += (++cnt[a[i]] == 1);
-    else
-        res -= (--cnt[a[i]] == 0);
-}
+#define mid ((l + r) >> 1)
+    int nodecnt, sum[N << 5], L[N << 5], R[N << 5], rt[N];
+    void modify(int &p, int pre, int l, int r, int x)
+    {
+        p = ++nodecnt;
+        L[p] = L[pre], R[p] = R[pre], sum[p] = sum[pre] + 1;
+        if (l < r)
+        {
+            if (x <= mid)
+                modify(L[p], L[pre], l, mid, x);
+            else
+                modify(R[p], R[pre], mid + 1, r, x);
+        }
+    }
+    int query(int u, int v, int l, int r, int x, int y)
+    {
+        if (l == x and y == r)
+            return sum[u] - sum[v];
+        int res = 0;
+        if (x <= mid)
+            res += query(L[u], L[v], l, mid, x, std::min(mid, y));
+        if (mid < y)
+            res += query(R[u], R[v], mid + 1, r, std::max(mid + 1, x), y);
+        return res;
+    }
+} T;
 
 int main()
 {
     n = read();
-    size = sqrt(n);
     for (int i = 1; i <= n; i++)
+        a[i] = read(), last[i] = next[a[i]] + 1, next[a[i]] = i,
+        T.modify(T.rt[i], T.rt[i - 1], 1, n, last[i]);
+    for (int m = read(); m--;)
     {
-        a[i] = read();
-        belong[i] = (i - 1) / size + 1;
+        int l = read(), r = read();
+        write(T.query(T.rt[r], T.rt[l - 1], 1, n, 1, l)), putchar('\n');
     }
-    m = read();
-    for (int i = 1; i <= m; i++)
-        query[i].l = read(), query[i].r = read(), query[i].id = i;
-    std::sort(query + 1, query + 1 + m);
-    for (int i = 1; i <= m; i++)
-    {
-        while (query[i].l < L)
-            update(--L, 1);
-        while (R < query[i].r)
-            update(++R, 1);
-        while (L < query[i].l)
-            update(L++, -1);
-        while (query[i].r < R)
-            update(R--, -1);
-        ans[query[i].id] = res;
-    }
-    for (int i = 1; i <= m; i++)
-        write(ans[i]), puts("");
     return 0;
 }

@@ -1,0 +1,152 @@
+#include <stdio.h>
+#include <algorithm>
+#include <memory.h>
+
+#define int long long
+
+const int K = 1e7;
+
+int n, ans, last, begin;
+
+int read()
+{
+    int f = 1, x = 0;
+    char ch = getchar();
+    while (ch < '0' or ch > '9')
+        f = ch == '-' ? -1 : 1, ch = getchar();
+    while (ch >= '0' and ch <= '9')
+        x = x * 10 + ch - '0', ch = getchar();
+    return x * f;
+}
+
+int cnt(int x)
+{
+    int res = 0;
+    while (x % 10 == 9)
+        res++, x /= 10;
+    return res;
+}
+
+void solve()
+{
+    for (int i = begin; i <= n; i++)
+    {
+        last++;
+        if (i % 10 == 0)
+            last -= 9 * cnt(i - 1);
+        ans += last;
+    }
+    printf("%lld", ans);
+}
+
+signed main()
+{
+#define HWX_AK_IOI(x, y, z) else if (n < (x + 1) * K) begin = x * K + 1, last = y, ans = z;
+    // freopen("count.in", "r", stdin);
+    // freopen("count.out", "w", stdout);
+    n = read();
+    if (n < 1e7)
+        begin = 1, last = 0, ans = 0;
+    HWX_AK_IOI(1, 1, 315000001)
+    HWX_AK_IOI(2, 2, 640000002)
+    HWX_AK_IOI(3, 3, 975000003)
+    HWX_AK_IOI(4, 4, 1320000004)
+    HWX_AK_IOI(5, 5, 1675000005)
+    HWX_AK_IOI(6, 6, 2040000006)
+    HWX_AK_IOI(7, 7, 2415000007)
+    HWX_AK_IOI(8, 8, 2800000008)
+    HWX_AK_IOI(9, 9, 3195000009)
+    HWX_AK_IOI(10, 1, 3600000001)
+    HWX_AK_IOI(11, 2, 3925000002)
+    HWX_AK_IOI(12, 3, 4260000003)
+    HWX_AK_IOI(13, 4, 4605000004)
+    HWX_AK_IOI(14, 5, 4960000005)
+    HWX_AK_IOI(15, 6, 5325000006)
+    HWX_AK_IOI(16, 7, 5700000007)
+    HWX_AK_IOI(17, 8, 6085000008)
+    HWX_AK_IOI(18, 9, 6480000009)
+    HWX_AK_IOI(19, 10, 6885000010)
+    HWX_AK_IOI(20, 2, 7300000002)
+    HWX_AK_IOI(21, 3, 7635000003)
+    HWX_AK_IOI(22, 4, 7980000004)
+    HWX_AK_IOI(23, 5, 8335000005)
+    HWX_AK_IOI(24, 6, 8700000006)
+    HWX_AK_IOI(25, 7, 9075000007)
+    HWX_AK_IOI(26, 8, 9460000008)
+    HWX_AK_IOI(27, 9, 9855000009)
+    HWX_AK_IOI(28, 10, 10260000010)
+    HWX_AK_IOI(29, 11, 10675000011)
+    HWX_AK_IOI(30, 3, 11100000003)
+    HWX_AK_IOI(31, 4, 11445000004)
+    HWX_AK_IOI(32, 5, 11800000005)
+    HWX_AK_IOI(33, 6, 12165000006)
+    HWX_AK_IOI(34, 7, 12540000007)
+    HWX_AK_IOI(35, 8, 12925000008)
+    HWX_AK_IOI(36, 9, 13320000009)
+    HWX_AK_IOI(37, 10, 13725000010)
+    HWX_AK_IOI(38, 11, 14140000011)
+    HWX_AK_IOI(39, 12, 14565000012)
+    HWX_AK_IOI(40, 4, 15000000004)
+    HWX_AK_IOI(41, 5, 15355000005)
+    HWX_AK_IOI(42, 6, 15720000006)
+    HWX_AK_IOI(43, 7, 16095000007)
+    HWX_AK_IOI(44, 8, 16480000008)
+    HWX_AK_IOI(45, 9, 16875000009)
+    HWX_AK_IOI(46, 10, 17280000010)
+    HWX_AK_IOI(47, 11, 17695000011)
+    HWX_AK_IOI(48, 12, 18120000012)
+    HWX_AK_IOI(49, 13, 18555000013)
+    HWX_AK_IOI(50, 5, 19000000005)
+    HWX_AK_IOI(51, 6, 19365000006)
+    HWX_AK_IOI(52, 7, 19740000007)
+    HWX_AK_IOI(53, 8, 20125000008)
+    HWX_AK_IOI(54, 9, 20520000009)
+    HWX_AK_IOI(55, 10, 20925000010)
+    HWX_AK_IOI(56, 11, 21340000011)
+    HWX_AK_IOI(57, 12, 21765000012)
+    HWX_AK_IOI(58, 13, 22200000013)
+    HWX_AK_IOI(59, 14, 22645000014)
+    HWX_AK_IOI(60, 6, 23100000006)
+    HWX_AK_IOI(61, 7, 23475000007)
+    HWX_AK_IOI(62, 8, 23860000008)
+    HWX_AK_IOI(63, 9, 24255000009)
+    HWX_AK_IOI(64, 10, 24660000010)
+    HWX_AK_IOI(65, 11, 25075000011)
+    HWX_AK_IOI(66, 12, 25500000012)
+    HWX_AK_IOI(67, 13, 25935000013)
+    HWX_AK_IOI(68, 14, 26380000014)
+    HWX_AK_IOI(69, 15, 26835000015)
+    HWX_AK_IOI(70, 7, 27300000007)
+    HWX_AK_IOI(71, 8, 27685000008)
+    HWX_AK_IOI(72, 9, 28080000009)
+    HWX_AK_IOI(73, 10, 28485000010)
+    HWX_AK_IOI(74, 11, 28900000011)
+    HWX_AK_IOI(75, 12, 29325000012)
+    HWX_AK_IOI(76, 13, 29760000013)
+    HWX_AK_IOI(77, 14, 30205000014)
+    HWX_AK_IOI(78, 15, 30660000015)
+    HWX_AK_IOI(79, 16, 31125000016)
+    HWX_AK_IOI(80, 8, 31600000008)
+    HWX_AK_IOI(81, 9, 31995000009)
+    HWX_AK_IOI(82, 10, 32400000010)
+    HWX_AK_IOI(83, 11, 32815000011)
+    HWX_AK_IOI(84, 12, 33240000012)
+    HWX_AK_IOI(85, 13, 33675000013)
+    HWX_AK_IOI(86, 14, 34120000014)
+    HWX_AK_IOI(87, 15, 34575000015)
+    HWX_AK_IOI(88, 16, 35040000016)
+    HWX_AK_IOI(89, 17, 35515000017)
+    HWX_AK_IOI(90, 9, 36000000009)
+    HWX_AK_IOI(91, 10, 36405000010)
+    HWX_AK_IOI(92, 11, 36820000011)
+    HWX_AK_IOI(93, 12, 37245000012)
+    HWX_AK_IOI(94, 13, 37680000013)
+    HWX_AK_IOI(95, 14, 38125000014)
+    HWX_AK_IOI(96, 15, 38580000015)
+    HWX_AK_IOI(97, 16, 39045000016)
+    HWX_AK_IOI(98, 17, 39520000017)
+    HWX_AK_IOI(99, 18, 40005000018)
+    HWX_AK_IOI(100, 1, 40500000001)
+    solve();
+    return 0;
+}

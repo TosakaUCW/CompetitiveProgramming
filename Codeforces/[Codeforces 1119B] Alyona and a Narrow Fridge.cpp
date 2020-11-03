@@ -16,7 +16,6 @@ bool judge(int x)
     std::sort(b + 1, b + 1 + x, cmp);
     for (int i = 1; i <= x; i += 2)
         res += b[i];
-    //printf("%d %d\n", x, res);
     return res <= m;
 }
 

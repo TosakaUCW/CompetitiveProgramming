@@ -8,7 +8,7 @@ int a[N], s1[N], len1, s2[N], len2;
 
 int main()
 {
-    while (scanf("%d", &a[++n]) != EOF)
+    while (scanf("%d", &a[++n]) == 1)
         ;
     n--;
     s1[1] = s2[1] = a[1], len1 = len2 = 1;

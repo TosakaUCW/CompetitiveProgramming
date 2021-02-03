@@ -1,55 +1,55 @@
 #include <stdio.h>
 #include <algorithm>
+#include <memory.h>
+
+#define int long long
+#define lowbit(x) (x & -x)
+
+int read(int x = 0, int f = 0, char ch = getchar())
+{
+    while ('0' > ch or ch > '9')
+        f = ch == '-', ch = getchar();
+    while ('0' <= ch and ch <= '9')
+        x = x * 10 + (ch ^ 48), ch = getchar();
+    return f ? -x : x;
+}
 
 const int N = 5e5 + 5;
 
-int n;
-long long ans;
-
-struct Binary_Indexed_Tree
-{
-    int c[N];
-    int lowbit(int x)
-    {
-        return x & (-x);
-    }
-    void add(int k, int x)
-    {
-        for (int i = k; i <= n; i += lowbit(i))
-            c[i] += x;
-    }
-    int query(int k)
-    {
-        int res = 0;
-        for (int i = k; i; i -= lowbit(i))
-            res += c[i];
-        return res;
-    }
-} BIT;
+int n, ans;
+int c[N];
 
 struct Node
 {
     int val, pos;
+    bool friend operator<(Node a, Node b) { return a.val == b.val ? a.pos > b.pos : a.val > b.val; }
 } a[N];
 
-bool cmp(Node a, Node b)
+void add(int x, int k)
 {
-    if (a.val != b.val)
-        return a.val > b.val;
-    return a.pos > b.pos;
+    for (; x <= n; x += lowbit(x))
+        c[x] += k;
 }
 
-int main()
+int query(int x)
 {
-    scanf("%d", &n);
+    int res = 0;
+    for (; x; x -= lowbit(x))
+        res += c[x];
+    return res;
+}
+
+signed main()
+{
+#ifndef ONLINE_JUDGE
+    freopen("x.in", "r", stdin);
+#endif // !ONLINE_JUDGE
+    n = read();
     for (int i = 1; i <= n; i++)
-        scanf("%d", &a[i].val), a[i].pos = i;
-    std::sort(a + 1, a + 1 + n, cmp);
+        a[i] = Node{read(), i};
+    std::sort(a + 1, a + 1 + n);
     for (int i = 1; i <= n; i++)
-    {
-        ans += BIT.query(a[i].pos);
-        BIT.add(a[i].pos, 1);
-    }
+        add(a[i].pos, 1), ans += query(a[i].pos - 1);
     printf("%lld", ans);
     return 0;
 }

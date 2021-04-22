@@ -24,8 +24,8 @@ int insert(int pre, int val)
 		int x = (val >> i) & 1;
 		ch[p][x ^ 1] = ch[pre][x ^ 1];
 		pre = ch[pre][x];
-		now = ch[now][x] = ++tot;
-		sum[now] = sum[pre] + 1;
+		p = ch[p][x] = ++tot;
+		sum[p] = sum[pre] + 1;
 	}
 	return res;
 }
@@ -62,6 +62,6 @@ int main()
 		Y[i] = read(), rt[i] = insert(rt[i - 1], Y[i]);
 	for (int q = read(), x1, x2, y1, y2; q--; )
 		x1 = read(), x2 = read(), y1 = read(), y2 = read(),
-		printf("%d\n", solve(x1, x2, y1, y2, read());
+		printf("%d\n", solve(x1, x2, y1, y2, read()));
 	return 0;
 }

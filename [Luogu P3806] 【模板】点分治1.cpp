@@ -1,107 +1,84 @@
-// luogu-judger-enable-o2
 #include <stdio.h>
 #include <algorithm>
 
-#define Rep(i, x, y) for (register int i = x; i <= y; i++)
+int read(int x = 0, int f = 0, char ch = getchar())
+{
+	while (ch < 48 or ch > 57) f = ch == '-', ch = getchar();
+	while (48 <= ch and ch <= 57) x = x * 10 + ch - 48, ch = getchar();
+	return f ? -x : x;
+}
 
-const int N = 1e4;
+const int N = 5e5 + 5;
+const int INF = 2147483647;
 
-int n, m, ans[10000005];
-int num_edge, head[N + 5];
-int tot, sum, root;
-int size[N + 5], dis[N + 5], f[N + 5];
-bool vis[N + 5];
+int n, m, q[N];
+int rt, max[N], siz[N];
+bool vis[N], ok[N];
 
+int head[N], E;
+struct Edge { int next, to, dis; } e[N];
+
+int a_tot;
 struct Node
 {
-    int next, to, dis;
-} edge[2 * N + 5];
+	int cur, dis, bel;
+	bool friend operator < (Node a, Node b) { return a.dis < b.dis; }
+} a[N];
 
-void add_edge(int u, int v, int dis)
+
+void add(int u, int v, int dis) { e[++E] = {head[u], v, dis}, head[u] = E; }
+
+#define fore(i, u, v) for (int i = head[u], v = e[i].to; i; i = e[i].next, v = e[i].to)
+
+void getrt(int u, int fa, int tot)
 {
-    num_edge++;
-    edge[num_edge].next = head[u];
-    edge[num_edge].to = v;
-    edge[num_edge].dis = dis;
-    head[u] = num_edge;
+	siz[u] = 1, max[u] = 0;
+	fore(i, u, v) if (v != fa and !vis[v]) 
+		getrt(v, u, tot), siz[u] += siz[v], max[u] = std::max(max[u], siz[v]);
+	max[u] = std::max(max[u], tot - siz[u]);
+	if (max[rt] > max[u] or !rt) rt = u;
 }
 
-void find_root(int u, int fa)
+void get_dis(int u, int fa, int dis, int bel)
 {
-    f[u] = 0;
-    size[u] = 1;
-    for (int i = head[u]; i; i = edge[i].next)
-    {
-        int v = edge[i].to;
-        if (vis[v] or v == fa)
-            continue;
-        find_root(v, u);
-        size[u] += size[v];
-        f[u] = std::max(f[u], size[v]);
-    }
-    f[u] = std::max(f[u], sum - size[u]);
-    if (f[u] < f[root])
-        root = u;
+    a[++a_tot] = {u, dis, bel};
+    fore(i, u, v) if (!vis[v] and v != fa) get_dis(v, u, dis + e[i].dis, bel); 
 }
 
-void find_dep(int u, int fa, int l)
+void calc(int u)
 {
-    dis[++tot] = l;
-    for (int i = head[u]; i; i = edge[i].next)
-    {
-        int v = edge[i].to;
-        if (vis[v] or v == fa)
-            continue;
-        find_dep(v, u, l + edge[i].dis);
-    }
+	a[a_tot = 1] = {u, 0, u};
+	fore(i, u, v) if (!vis[v]) get_dis(v, u, e[i].dis, v);
+	std::sort(a + 1, a + 1 + a_tot);
+	for (int i = 1; i <= m; i++)
+		if (!ok[i])
+			for (int L = 1, R = a_tot; L < R; )
+				if (a[L].dis + a[R].dis > q[i]) R--;
+				else if (a[L].dis + a[R].dis < q[i]) L++;
+				else if (a[L].bel == a[R].bel)
+                {
+					if (a[R].dis == a[R - 1].dis) R--;
+					else L++;
+                }
+				else { ok[i] = 1; break; }
 }
 
-void calc(int u, int l, int c)
+void solve(int u)
 {
-    tot = 0;
-    find_dep(u, 0, l);
-    Rep(i, 1, tot)
-        Rep(j, 1, tot)
-            ans[dis[i] + dis[j]] += c;
-}
-
-void devide(int u)
-{
-    vis[u] = true;
-    calc(u, 0, 1);
-    for (int i = head[u]; i; i = edge[i].next)
-    {
-        int v = edge[i].to;
-        if (vis[v])
-            continue;
-        calc(v, edge[i].dis, -1);
-        root = 0, sum = size[v];
-        find_root(v, 0);
-        devide(root);
-    }
+	vis[u] = 1, calc(u);
+	fore(i, u, v) if (!vis[v]) rt = 0, getrt(v, 0, siz[v]), solve(rt);
 }
 
 int main()
 {
-    scanf("%d%d", &n, &m);
-    Rep(i, 1, n - 1)
-    {
-        int u, v, dis;
-        scanf("%d%d%d", &u, &v, &dis);
-        add_edge(u, v, dis);
-        add_edge(v, u, dis);
-    }
-    sum = f[0] = n;
-    find_root(1, 0);
-    devide(root);
-    Rep(i, 1, m)
-    {
-        int k;
-        scanf("%d", &k);
-        if (ans[k])
-            printf("AYE\n");
-        else
-            printf("NAY\n");
-    }
-    return 0;
+	n = read(), m = read();
+	for (int i = 1, u, v, dis; i < n; i++) u = read(), v = read(), dis = read(), add(u, v, dis), add(v, u, dis);
+	for (int i = 1; i <= m; i++) 
+	{
+		q[i] = read();
+		if (!q[i]) ok[i] = true;
+	}
+	max[rt = 0] = n, getrt(1, 0, n), solve(rt);
+	for (int i = 1; i <= m; i++) puts(ok[i] ? "AYE" : "NAY");
+	return 0;
 }

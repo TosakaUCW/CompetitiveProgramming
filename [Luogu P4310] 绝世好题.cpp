@@ -1,24 +1,28 @@
 #include <stdio.h>
-#include <algorithm>
-#include <memory.h>
+
+int read(int x = 0, char ch = getchar())
+{
+    while (ch < 48 or ch > 57) ch = getchar();
+    while (48 <= ch and ch <= 57) x = x * 10 + ch - 48, ch = getchar();
+    return x;
+}
 
 const int N = 1e5 + 5;
 
-int n;
-int a[N];
-int f[N], max;
+int n, a[N], f[N], max;
 
 int main()
 {
-    scanf("%d", &n);
+    n = read();
     for (int i = 1; i <= n; i++)
-        scanf("%d", &a[i]), f[i] = 1;
-    for (int i = 1; i <= n; max = std::max(max, f[i++]))
-        for (int j = i - 1; j; j--)
-            if (f[i] > max)
-                break;
-            else if ((a[j] & a[i]) != 0)
-                f[i] = std::max(f[i], f[j] + 1);
+        a[i] = read(), f[i] = 1;
+    for (int i = 1; i <= n; i++)
+    {
+        for (int j = i - 1; j and f[i] <= max; j--)
+            if ((a[j] & a[i]) != 0 and f[j] + 1 > f[i])
+                f[i] = f[j] + 1;
+        if (f[i] > max) max = f[i];
+    }
     printf("%d", max);
     return 0;
 }

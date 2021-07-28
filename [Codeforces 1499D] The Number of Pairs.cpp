@@ -23,7 +23,7 @@ bool vis[N];
 void init(int n)
 {
 	for (int i = 2; i <= n; i++)
-	{	
+	{
 		if (!vis[i]) pri[++cnt] = i, f[i] = 1, g[i] = i;
 		for (int j = 1; j <= cnt and i * pri[j] <= n; j++)
 		{
@@ -53,7 +53,7 @@ void split(int x)
 
 void dfs(int x, int num)
 {
-	if (num == siz) 
+	if (num == siz)
 	{
 		if ((x + d) % c == 0) ans += pw[f[(x + d) / c]];
 		return;

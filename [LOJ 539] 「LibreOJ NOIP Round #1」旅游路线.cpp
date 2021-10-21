@@ -27,9 +27,9 @@ int main()
         u = read(), v = read(), l = read(),
         g[u][v][0] = std::max(g[u][v][0], l);
     for (int p = 1; (1 << p) <= C; p++)
-        for (int i = 1; i <= n; i++)
-            for (int j = 1; j <= n; j++)
-                for (int k = 1; k <= n; k++)
+        for (int k = 1; k <= n; k++)
+           for (int i = 1; i <= n; i++)
+                for (int j = 1; j <= n; j++)
                     g[i][j][p] = std::max(g[i][j][p], g[i][k][p - 1] + g[k][j][p - 1]);
     for (int i = 1; i <= n; i++)
     {

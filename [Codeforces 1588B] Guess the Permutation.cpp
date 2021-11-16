@@ -36,23 +36,40 @@ const int N = 1e6 + 5;
 const int P = 998244353;
 
 int n;
-int a[N];
+
+int ask(int L, int R) { return printf("? %d %d\n", L, R), flu, read(); }
+
+int get()
+{
+    int L = 1, R = n - 2, ans = 1;
+    while (L <= R)
+    {
+        int mid = (L + R) / 2;
+        int res = ask(1, mid);
+        if (res > 0)
+            R = mid - 1;
+        else
+            L = mid + 1;
+        if (res == 0)
+            ans = mid;
+    }
+    return ans;
+}
 
 void solve()
 {
+    flu;
     n = read();
-    int ans = INT_MAX;
-    for (int i = 1; i <= n; i++)
-    {
-        int x = read(), y = read();
-        ans = std::min(ans, y / x);
-    }
-    printf("%d", ans);
+    int i = get();
+    int j = i + ask(i, n) - ask(i + 1, n) + 1;
+    int k = j + ask(j, n) - ask(j + 1, n);
+    printf("! %d %d %d\n", i, j, k), flu;
 }
 
 signed main()
 {
-    solve();
+    for (int T = read(); T--; solve())
+        ;
 #ifndef ONLINE_JUDGE
     std::cerr << (double)clock() / CLOCKS_PER_SEC << 's' << std::endl;
 #endif

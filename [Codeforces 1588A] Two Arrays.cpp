@@ -36,23 +36,31 @@ const int N = 1e6 + 5;
 const int P = 998244353;
 
 int n;
-int a[N];
+int a[N], b[N];
+std::multiset<int> S;
 
 void solve()
 {
     n = read();
-    int ans = INT_MAX;
+    S.clear();
     for (int i = 1; i <= n; i++)
-    {
-        int x = read(), y = read();
-        ans = std::min(ans, y / x);
-    }
-    printf("%d", ans);
+        a[i] = read();
+    for (int i = 1; i <= n; i++)
+        b[i] = read();
+    std::sort(a + 1, a + 1 + n);
+    std::sort(b + 1, b + 1 + n);
+    for (int i = 1; i <= n; i++)
+        if (b[i] - a[i] == 0 or b[i] - a[i] == 1)
+            continue;
+        else
+            return puts("NO"), void();
+    return puts("YES"), void();
 }
 
 signed main()
 {
-    solve();
+    for (int T = read(); T--; solve())
+        ;
 #ifndef ONLINE_JUDGE
     std::cerr << (double)clock() / CLOCKS_PER_SEC << 's' << std::endl;
 #endif

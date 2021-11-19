@@ -1,110 +1,97 @@
-#include <stdio.h>
-#include <algorithm>
-#include <memory.h>
-
-typedef long long ll;
-
-const int N = 3e5 + 5;
-const int M = N << 1;
-const ll INF = 1LL << 60;
-
-int n, m;
-int dfin[N], dfou[N], top[N], son[N], fa[N], depth[N], size[N];
-long long f[N], min[N];
-int head[N], num_edge;
-int a[N], stack[N];
-bool b[N];
-
-struct Node
+#include <bits/stdc++.h>
+#define int long long
+#define fi first
+#define se second
+#define ins insert
+#define pb push_back
+#define flu fflush(stdout)
+#define pii std::pair<int, int>
+using std::swap;
+using std::vector;
+int read(int x = 0, bool f = 0, char ch = getchar())
 {
-    int next, to, dis;
-} edge[M];
-
-void add_edge(int u, int v, int dis = 0) { edge[++num_edge] = Node{head[u], v, dis}, head[u] = num_edge; }
-
-int read()
-{
-    int x = 0, f = 1;
-    char ch = getchar();
-    while ('0' > ch or ch > '9')
-        f = ch == '-' ? -1 : 1, ch = getchar();
-    while ('0' <= ch and ch <= '9')
+    while (ch < 48 or ch > 57)
+        f = ch == 45, ch = getchar();
+    while (48 <= ch and ch <= 57)
         x = x * 10 + ch - 48, ch = getchar();
-    return x * f;
+    return f ? -x : x;
 }
 
+const int N = 1e6 + 5;
+
+int n;
+int a[N];
+vector<pii> g[N];
+vector<int> G[N];
+int f[N];
+int fa[N], siz[N], dep[N], top[N], son[N], dfn[N], idx[N];
 void dfs1(int u, int fa)
 {
-    ::fa[u] = fa, size[u] = 1, depth[u] = depth[fa] + 1;
-    for (int i = head[u], v; i; i = edge[i].next)
-        if ((v = edge[i].to) != fa)
-            min[v] = std::min(min[u], (ll)edge[i].dis), dfs1(v, u), size[u] += size[v], son[u] = size[v] > size[son[u]] ? v : son[u];
+    ::fa[u] = fa, siz[u] = 1, dep[u] = dep[fa] + 1;
+    for (auto [v, dis] : g[u])
+        if (v ^ fa) f[v] = std::min(f[u], dis), dfs1(v, u), siz[u] += siz[v], son[u] = siz[v] > siz[son[u]] ? v : son[u];
 }
-
 void dfs2(int u)
 {
-    dfin[u] = ++dfin[0], top[u] = u == son[fa[u]] ? top[fa[u]] : u;
-    if (son[u])
-        dfs2(son[u]);
-    for (int i = head[u], v; i; i = edge[i].next)
-        if ((v = edge[i].to) != fa[u] and v != son[u])
-            dfs2(v);
-    dfou[u] = ++dfin[0];
+    dfn[u] = ++dfn[0], idx[dfn[u]] = u, top[u] = u == son[fa[u]] ? top[fa[u]] : u;
+    if (son[u]) dfs2(son[u]);
+    for (auto [v, dis] : g[u]) if (v ^ son[u] and v ^ fa[u]) dfs2(v);
+}
+int LCA(int x, int y)
+{
+    for (; top[x] ^ top[y]; x = fa[top[x]]) if (dep[top[x]] < dep[top[y]]) swap(x, y);
+    return dep[x] < dep[y] ? x : y;
+}
+int dp(int u)
+{
+    if (G[u].size() == 0) return f[u];
+    int res = 0;
+    for (auto v : G[u]) res += dp(v);
+    G[u].clear();
+    return std::min(res, f[u]);
 }
 
-int lca(int x, int y)
+int stk[N], end;
+vector<int> h;
+#define add(x, y) G[x].pb(y)
+
+void ins(int x)
 {
-    for (; top[x] != top[y]; x = fa[top[x]])
-        if (dfin[top[x]] < dfin[top[y]])
-            std::swap(x, y);
-    return dfin[x] < dfin[y] ? x : y;
+    if (end == 1) return stk[++end] = x, void();
+    int lca = LCA(x, stk[end]);
+    if (lca == stk[end]) return;
+    while (end > 1 and dfn[stk[end - 1]] >= dfn[lca])
+        add(stk[end - 1], stk[end]), --end;
+    if (lca != stk[end]) add(lca, stk[end]), stk[end] = lca;
+    stk[++end] = x;
 }
 
-bool cmp(int x, int y)
+void solve()
 {
-    int k1 = x > 0 ? dfin[x] : dfou[-x];
-    int k2 = y > 0 ? dfin[y] : dfou[-y];
-    return k1 < k2;
-}
-
-int main()
-{
-    n = read();
-    for (int i = 1, u, v, dis; i < n; i++)
-        u = read(), v = read(), dis = read(), add_edge(u, v, dis), add_edge(v, u, dis);
-    min[1] = INF, dfs1(1, 0), dfs2(1);
-    for (m = read(); m--;)
+    n = read(), f[1] = LLONG_MAX;
+    for (int i = 1, u, v, w; i < n; i++)
+        u = read(), v = read(), w = read(),
+        g[u].pb({v, w}), g[v].pb({u, w});
+    dfs1(1, 0), dfs2(1);
+    for (int T = read(); T--; h.clear())
     {
-        int k = read();
-        for (int i = 1; i <= k; i++)
-            a[i] = read(), b[a[i]] = true, f[a[i]] = min[a[i]];
-        std::sort(a + 1, a + 1 + k, cmp);
-        for (int i = 1; i < k; i++)
-        {
-            int LCA = lca(a[i], a[i + 1]);
-            if (!b[LCA])
-                a[++k] = LCA, b[LCA] = true;
-        }
-        for (int i = 1, tmp = k; i <= tmp; i++)
-            a[++k] = -a[i];
-        if (!b[1])
-            a[++k] = 1, a[++k] = -1;
-        std::sort(a + 1, a + 1 + k, cmp);
-        for (int i = 1, top = 0; i <= k; i++)
-            if (a[i] > 0)
-                stack[++top] = a[i];
-            else
-            {
-                int u = stack[top--];
-                if (u != 1)
-                {
-                    int fa = stack[top];
-                    f[fa] += std::min(f[u], min[u]);
-                }
-                else
-                    printf("%lld\n", f[1]);
-                f[u] = b[u] = 0;
-            }
+        for (int k = read(); k--; ) h.pb(read());
+        std::sort(h.begin(), h.end(), [](int x, int y) { return dfn[x] < dfn[y]; });
+        stk[end = 1] = 1;
+        for (auto x : h) ins(x);
+        while (end > 0) add(stk[end - 1], stk[end]), end--;
+        printf("%lld\n", dp(1));
     }
+}
+
+signed main()
+{
+#ifndef ONLINE_JUDGE
+    freopen("my.in", "r", stdin);
+#endif
+    solve();
+#ifndef ONLINE_JUDGE
+    std::cerr << (double)clock() / CLOCKS_PER_SEC << 's' << std::endl;
+#endif
     return 0;
 }

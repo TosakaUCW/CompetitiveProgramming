@@ -1,0 +1,17 @@
+{
+    "configurations": [
+        {
+            "name": "Mac",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/Library/Developer/CommandLineTools/usr/lib/clang/15.0.0/include"
+            ],
+            "defines": [],
+            "macFrameworkPath": [],
+            "compilerPath": "/usr/bin/g++",
+            "cStandard": "c23",
+            "cppStandard": "c++20"
+        }
+    ],
+    "version": 4
+}

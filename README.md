@@ -1,2 +1,3 @@
-# Solution_Source_Code
-My source code in my Olympic Informatics career
+# CompetitiveProgramming
+
+My Competitive Programming Code Library

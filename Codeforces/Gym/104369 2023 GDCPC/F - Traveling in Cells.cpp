@@ -14,19 +14,17 @@ int read(int x = 0, int f = 0, char ch = getchar())
     return f ? -x : x;
 }
 
-/*
+using namespace std;
 #include <ext/pb_ds/assoc_container.hpp>
 using namespace __gnu_pbds;
-const int RANDOM = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+const int RANDOM = chrono::high_resolution_clock::now().time_since_epoch().count();
 struct chash { int operator()(int x) const { return x ^ RANDOM; } };
 typedef gp_hash_table<int, int, chash> hash_t;
-*/
 
 
 const int N = 3e5 + 5;
 long long sum[N << 2];
-// hash_t t[N << 2];
-std::unordered_map<int, int> t[N << 2];
+hash_t t[N << 2];
 void modifyC(int p, int l, int r, int pos, int col, int val)
 {
     t[p][col] += val;
@@ -83,8 +81,6 @@ void solve()
 {
     int n = read(), q = read();
     vector<int> c(n + 1), v(n + 1);
-    for (int i = 1; i <= n * 4; i++) t[i].clear();
-    memset(sum, 0, sizeof(long long) * (4 * n + 1));
     for (int i = 1; i <= n; i++)
         c[i] = read(), modifyC(1, 1, n, i, c[i], 1);
     for (int i = 1; i <= n; i++)
@@ -93,9 +89,11 @@ void solve()
     {
         opt = read(), x = read(), y = read();
         if (opt == 1)
-            modifyC(1, 1, n, x, c[x], -1),
-            c[x] = y,
+        {
+            modifyC(1, 1, n, x, c[x], -1);
+            c[x] = y;
             modifyC(1, 1, n, x, c[x], +1);
+        }
         if (opt == 2)
             modifyS(1, 1, n, x, y - v[x]), v[x] = y;
         if (opt == 3)
@@ -111,7 +109,7 @@ void solve()
             cout << queryS(1, 1, n, l, r) << '\n';
         }
     }
-    // for (int i = 1; i <= 4 * n; ++i) t[i].clear(), sum[i] = 0;
+    for (int i = 1; i <= 4 * n; ++i) t[i].clear(), sum[i] = 0;
 }
 signed main()
 {

@@ -10,35 +10,30 @@ int read(int x = 0, int f = 0, char ch = getchar())
     while(48 <= ch and ch <= 57) x = x * 10 + ch - 48, ch = getchar();
     return f ? -x : x;
 }
-const int N = 5e3 + 5;
-// const int INF = 1e18;
-int n, m, a[N];
-pii f[N][N];
+const int N = 2e5 + 5;
+int n, m;
 void solve()
 {
-    int n = read();
-    for (int i = 1; i <= n; i++) a[i] = read();
+    n = read();
+    int ans = 0;
+    int sum = 0;
     for (int i = 1; i <= n; i++)
-        for (int j = 1; j <= n; j++)
+        sum += read();
+    for (int j = 30; j >= 0; j--)
+        if (n * ((1LL << j) - 1LL) < sum)
         {
-            if (j == 1)
-            {
-                if (i == 1) f[i][j] = {0, 1};
-                else if (i == n) f[i][j] = {1, 0};
-                else
-                {
-                    if (a[i - 1] > a[i + 1]) f[i][j] = {1, 0};
-                    else f[i][j] = {0, 1};
-                }
-            }
-
+            int num = std::min(sum / (1LL << j), n);
+            if (num == 0) continue;
+            sum -= num * (1LL << j);
+            ans |= (1LL << j);
         }
+    cout << ans;
 }
 
 signed main()
 {
 #ifndef ONLINE_JUDGE
-    // freopen("B.in", "r", stdin);
+    freopen("B.in", "r", stdin);
 #endif
     for (int T = 1; T--; solve());
     return 0;

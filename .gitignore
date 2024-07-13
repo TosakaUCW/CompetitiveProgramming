@@ -1,4 +1,6 @@
 *.swp
 .DS_Store
 x
-x.in
+*.in
+*.ans
+*.out

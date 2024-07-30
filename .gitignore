@@ -6,3 +6,4 @@ x
 *.out
 Beamer/
 x.cpp
+*.cpp__tests

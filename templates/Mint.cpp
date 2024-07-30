@@ -2,8 +2,7 @@ template <class T>
 constexpr T power(T a, i64 b) { T res {1}; for (; b; b /= 2, a *= a) if (b % 2) res *= a; return res; }
 constexpr i64 mul(i64 a, i64 b, i64 p) { i64 res = a * b - (i64)(1.L * a * b / p) * p; res %= p; if (res < 0) res += p; return res; }
 template <i64 P>
-struct MInt
-{
+struct MInt {
     i64 x;
     constexpr MInt() : x {0} {}
     constexpr MInt(i64 x) : x {norm(x % getMod())} {}

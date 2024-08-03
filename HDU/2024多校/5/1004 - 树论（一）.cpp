@@ -54,7 +54,7 @@ void solve() {
 
     auto LCA = [&](int u, int v) {
         while (top[u] != top[v]) {
-            if (fa[top[u]] < fa[top[v]]) std::swap(u, v);
+            if (dep[top[u]] < dep[top[v]]) std::swap(u, v);
             u = fa[top[u]];
         }
         if (dep[u] > dep[v]) std::swap(u, v);

@@ -18,55 +18,32 @@ void solve() {
         g[u].pb(v), g[v].pb(u);
     }
 
-    bool flag = 0;
-    int rt = 0;
+    auto check = [&](int u) {
+        int x = u;
+        for (auto rt : g[u]) {
+            if (g[rt].size() == 2) {
+                x = rt;
+                rt = g[rt][0] == u ? g[rt][1] : g[rt][0];
+            }
+            for (auto p : g[rt]) {
+                if (p == x) continue;
+                if (g[p].size() != 1) return false;
+            }
+        }
+        return true;
+    };
 
     for (int u = 1; u <= n; u++) {
         if (g[u].size() != 2) continue;
-
-        bool f = 1;
-
-        int rt1 = g[u][0], rt2 = g[u][1];
-        int x = 0, y = 0;
-
-        if (g[rt1].size() == 2) {
-            x = rt1;
-            rt1 = g[rt1][0] == u ? g[rt1][1] : g[rt1][0];
-        }
-        if (g[rt2].size() == 2) {
-            y = rt2;
-            rt2 = g[rt2][0] == u ? g[rt2][1] : g[rt2][0];
-        }
-
-        for (int p : g[rt1]) {
-            if (p == x or p == u) continue;
-            if (g[p].size() != 1) {
-                f = 0;
-                break;
-            }
-        }
-        for (int p : g[rt2]) {
-            if (p == y or p == u) continue;
-            if (g[p].size() != 1) {
-                f = 0;
-                break;
-            }
-        }
-
-        if (f == 1) {
-            flag = 1;
-            break;
+        if (check(u)) {
+            puts("Yes");
+            return;
         } 
-
-        // cout << u << rt1 << rt2 << '\n';
     }
 
-    puts(flag ? "Yes" : "No");
+    puts("No");
 
 }
-
-/*
-*/
 
 signed main() {
     for (int T = read(); T--; solve());

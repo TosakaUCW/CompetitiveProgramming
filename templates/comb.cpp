@@ -1,11 +1,9 @@
-struct Comb 
-{
+struct Comb {
     int n;
     std::vector<Z> _fac, _invfac, _inv;
     Comb() : n{0}, _fac{1}, _invfac{1}, _inv{0} {}
     Comb(int n) : Comb() { init(n); }
-    void init(int m) 
-    {
+    void init(int m) {
         m = std::min<i64>(m, Z::getMod() - 1);
         if (m <= n) return;
         _fac.resize(m + 1);

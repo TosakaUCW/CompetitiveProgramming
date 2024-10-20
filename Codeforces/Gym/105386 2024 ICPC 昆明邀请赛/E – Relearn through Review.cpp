@@ -1,49 +1,50 @@
 #include <bits/stdc++.h>
-#define int long long
-using pii = std::pair<int, int>;
-using tuu = std::tuple<int, int, int>;
+using i64 = long long;
+#define int i64
 #define pb push_back
+#define ep emplace
+#define eb emplace_back
+using std::cerr;
+using std::max, std::min, std::swap, std::array;
 using std::cin, std::cout, std::string, std::vector;
-int read(int x = 0, int f = 0, char ch = getchar())
-{
+int read(int x = 0, int f = 0, char ch = getchar()) {
     while (ch < 48 or 57 < ch) f = ch == 45, ch = getchar();
     while(48 <= ch and ch <= 57) x = x * 10 + ch - 48, ch = getchar();
     return f ? -x : x;
 }
-const int N = 3e5 + 5;
-int n, k, m;
-int a[N], pre[N], suf[N];
-void solve()
-{
-    n = read(), k = read();
-    using std::__gcd;
-    for (int i = 1; i <= n; i++) a[i] = read();
-    vector<int> pos;
-    for (int i = 1; i <= n; i++)
-    {
-        pre[i] = __gcd(pre[i - 1], a[i]);
-        if (pre[i] ^ pre[i - 1]) pos.pb(i);
+
+void solve() {
+    int n = read(), k = read();
+
+    vector<int> a(n + 1);
+    for (int i = 1; i <= n; i++) {
+        a[i] = read();
     }
-    suf[n + 1] = 0;
-    for (int i = n; i >= 1; i--) suf[i] = __gcd(suf[i + 1], a[i]);
-    int ans = 0;
-    for (auto l : pos)
-    {
-        int cum = pre[l - 1];
-        for (int r = l; r <= n; r++)
-        {
-            cum = __gcd(cum, a[r] + k);
-            ans = std::max(ans, __gcd(cum, suf[r + 1]));
+
+    vector<int> pre(n + 1), suf(n + 2);
+    for (int i = 1; i <= n; i++) {
+        pre[i] = std::__gcd(pre[i - 1], a[i]);
+    }
+    for (int i = n; i >= 1; i--) {
+        suf[i] = std::__gcd(suf[i + 1], a[i]);
+    }
+
+    int ans = pre[n];
+
+    for (int i = 1; i <= n; i++) {
+        if (pre[i] == pre[i - 1]) continue;
+
+        int g = 0;
+
+        for (int j = i; j <= n; j++) {
+            g = std::__gcd(g, a[j] + k);
+            ans = max(ans, std::__gcd(pre[i - 1], std::__gcd(g, suf[j + 1])));
         }
     }
     cout << ans << '\n';
 }
 
-signed main()
-{
-#ifndef ONLINE_JUDGE
-    freopen("E.in", "r", stdin);
-#endif
+signed main() {
     for (int T = read(); T--; solve());
     return 0;
 }

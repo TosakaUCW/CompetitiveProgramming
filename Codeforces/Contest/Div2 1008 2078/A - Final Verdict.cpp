@@ -30,7 +30,6 @@ void solve() {
         puts("NO");
     }
     int ans = 0;
-
 }
 
 signed main() {

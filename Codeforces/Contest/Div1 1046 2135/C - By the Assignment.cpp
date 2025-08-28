@@ -1,0 +1,163 @@
+#include <bits/stdc++.h>
+using i64 = long long;
+using u64 = unsigned long long;
+using i128 = __int128;
+#define int i64
+#define pb push_back
+#define ep emplace
+#define eb emplace_back
+using namespace std;
+int read(int x = 0, int f = 0, char ch = getchar()) {
+    while (ch < 48 or 57 < ch) f = ch == 45, ch = getchar();
+    while (48 <= ch and ch <= 57) x = x * 10 + ch - 48, ch = getchar();
+    return f ? -x : x;
+}
+#define debug(x) cout << #x << " = " << x << "\n";
+#define vdebug(a) cout << #a << " = "; for (auto x : a) cout << x << " "; cout << "\n";
+template <class T1, class T2> ostream &operator<<(ostream &os, const pair<T1, T2> &a) { return os << "(" << a.first << ", " << a.second << ")"; };
+template <class T> ostream &operator<<(ostream &os, const vector<T> &as) { const int sz = as.size(); os << "["; for (int i = 0; i < sz; i++) { if (i >= 256) { os << ", ..."; break; } if (i > 0) { os << ", "; } os << as[i]; } return os << "]"; }
+template <class T> void pv(T a, T b) { for (T i = a; i != b; i++) cerr << *i << " "; cerr << '\n'; }
+using pii = pair<int, int>;
+const int inf = 1e18;
+
+template <class T>
+constexpr T power(T a, i64 b) { T res {1}; for (; b; b /= 2, a *= a) if (b % 2) res *= a; return res; }
+constexpr i64 mul(i64 a, i64 b, i64 p) { i64 res = a * b - (i64)(1.L * a * b / p) * p; res %= p; if (res < 0) res += p; return res; }
+template <i64 P>
+struct MInt {
+    i64 x;
+    constexpr MInt() : x {0} {}
+    constexpr MInt(i64 x) : x {norm(x % getMod())} {}
+    static i64 Mod;
+    constexpr static i64 getMod() { return P > 0 ? P : Mod; }
+    constexpr static void setMod(i64 Mod_) { Mod = Mod_; }
+    constexpr i64 norm(i64 x) const { if (x < 0) x += getMod(); if (x >= getMod()) x -= getMod(); return x; }
+    constexpr i64 val() const { return x; }
+    constexpr MInt operator-() const { MInt res; res.x = norm(getMod() - x); return res; }
+    constexpr MInt inv() const { return power(*this, getMod() - 2); }
+    constexpr MInt &operator*=(MInt rhs) & { if (getMod() < (1ULL << 31)) x = x * rhs.x % int(getMod()); else x = mul(x, rhs.x, getMod()); return *this; }
+    constexpr MInt &operator+=(MInt rhs) & { x = norm(x + rhs.x); return *this; }
+    constexpr MInt &operator-=(MInt rhs) & { x = norm(x - rhs.x); return *this; }
+    constexpr MInt &operator/=(MInt rhs) & { return *this *= rhs.inv(); }
+    friend constexpr MInt operator*(MInt lhs, MInt rhs) { MInt res = lhs; res *= rhs; return res; }
+    friend constexpr MInt operator+(MInt lhs, MInt rhs) { MInt res = lhs; res += rhs; return res; }
+    friend constexpr MInt operator-(MInt lhs, MInt rhs) { MInt res = lhs; res -= rhs; return res; }
+    friend constexpr MInt operator/(MInt lhs, MInt rhs) { MInt res = lhs; res /= rhs; return res; }
+    friend constexpr std::istream &operator>>(std::istream &is, MInt &a) { i64 v; is >> v; a = MInt(v); return is; }
+    friend constexpr std::ostream &operator<<(std::ostream &os, const MInt &a) { return os << a.val(); }
+    friend constexpr bool operator==(MInt lhs, MInt rhs) { return lhs.val() == rhs.val(); }
+    friend constexpr bool operator!=(MInt lhs, MInt rhs) { return lhs.val() != rhs.val(); }
+    friend constexpr bool operator<(MInt lhs, MInt rhs) { return lhs.val() < rhs.val(); }
+};
+template <>
+i64 MInt<0>::Mod = 998244353;
+constexpr int P = 998244353;
+using Z = MInt<P>;
+
+
+void solve() {
+    int n = read(), m = read(), V = read();
+
+    vector<int> a(n);
+    for (auto &x : a) x = read();
+
+    vector<pii> edges(m);
+    vector<vector<pii>> g(n);
+    for (int i = 0; i < m; i++) {
+        auto &[u, v] = edges[i];
+        u = read() - 1, v = read() - 1;
+        g[u].eb(v, i), g[v].eb(u, i);
+    }
+
+    vector<int> dfn(n), low(n), isBridge(m);
+    int timer = 0;
+    auto dfs = [&](this auto &&dfs, int u, int las) -> void {
+        dfn[u] = low[u] = ++timer;
+        for (auto [v, id] : g[u]) {
+            if (id == las) continue;
+            if (!dfn[v]) {
+                dfs(v, id);
+                low[u] = min(low[u], low[v]);
+                if (low[v] > dfn[u]) isBridge[id] = 1;
+            } else {
+                low[u] = min(low[u], dfn[v]);
+            }
+        }
+    };
+    dfs(0, -1);
+    
+
+    vector<vector<int>> G(n);
+    vector<int> inG(n);
+    for (int i = 0; i < m; i++) {
+        if (isBridge[i]) continue;
+        auto [u, v] = edges[i];
+        G[u].eb(v), G[v].eb(u);
+        inG[u] = inG[v] = 1;
+    }
+
+    int coef = 0;
+    vector<int> vis(n, 0), color(n, -1);
+
+    for (int s = 0; s < n; ++s) {
+        if (vis[s] or !inG[s]) continue;
+
+        queue<int> q;
+        vector<int> t;
+
+        bool flag = 1;
+        vis[s] = 1, color[s] = 0;
+        q.ep(s);
+
+        while (!q.empty()) {
+            int u = q.front(); q.pop();
+            t.eb(u);
+            for (int v : G[u]) {
+                if (!vis[v]) {
+                    vis[v] = 1;
+                    color[v] = color[u] ^ 1;
+                    q.ep(v);
+                } else if (color[v] == color[u]) {
+                    flag = 0;
+                }
+            }
+        }
+
+        if (!flag) {
+            for (int v : t) {
+                if (a[v] != -1 and a[v] != 0) {
+                    cout << "0\n"; return;
+                }
+            }
+        } else {
+            int val = -1;
+
+            for (int v : t) {
+                if (a[v] == -1) continue;
+
+                if (val == -1) {
+                    val = a[v];
+                } else if (val != a[v]) { 
+                    cout << "0\n"; return;
+                }
+            }
+
+            if (val == -1) {
+                coef++;
+            }
+        }
+    }
+
+    for (int i = 0; i < n; i++) {
+        if (inG[i]) continue;
+        if (a[i] == -1) coef++;
+    }
+
+    cout << power(Z(V), coef) << '\n';
+}
+
+signed main() {
+    for (int T = read(); T--; solve());
+    // solve();
+    return 0;
+}

@@ -7,9 +7,7 @@ struct SAM {
         Node() : len{}, link{}, next{} {}
     };
     std::vector<Node> t;
-    SAM() {
-        init();
-    }
+    SAM() { init(); }
     void init() {
         t.assign(2, Node());
         t[0].next.fill(1);
@@ -45,20 +43,8 @@ struct SAM {
         t[cur].link = extend(p, c);
         return cur;
     }
-    
-    int next(int p, int x) {
-        return t[p].next[x];
-    }
-     
-    int link(int p) {
-        return t[p].link;
-    }
-    
-    int len(int p) {
-        return t[p].len;
-    }
-    
-    int size() {
-        return t.size();
-    }
+    int next(int p, int x) { return t[p].next[x]; }
+    int link(int p) { return t[p].link; }
+    int len(int p) { return t[p].len; }
+    int size() { return t.size(); }
 };

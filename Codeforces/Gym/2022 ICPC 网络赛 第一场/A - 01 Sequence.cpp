@@ -1,0 +1,68 @@
+#include <bits/stdc++.h>
+using i64 = long long;
+using u64 = unsigned long long;
+using i128 = __int128;
+#define int i64
+#define pb push_back
+#define ep emplace
+#define eb emplace_back
+using namespace std;
+int read(int x = 0, int f = 0, char ch = getchar()) {
+    while (ch < 48 or 57 < ch) f = ch == 45, ch = getchar();
+    while (48 <= ch and ch <= 57) x = x * 10 + ch - 48, ch = getchar();
+    return f ? -x : x;
+}
+#define debug(x) cout << #x << " = " << x << "\n";
+#define vdebug(a) cout << #a << " = "; for (auto x : a) cout << x << " "; cout << "\n";
+template <class T1, class T2> ostream &operator<<(ostream &os, const std::pair<T1, T2> &a) { return os << "(" << a.first << ", " << a.second << ")"; };
+template <class T> ostream &operator<<(ostream &os, const vector<T> &as) { const int sz = as.size(); os << "["; for (int i = 0; i < sz; i++) { if (i >= 256) { os << ", ..."; break; } if (i > 0) { os << ", "; } os << as[i]; } return os << "]"; }
+template <class T> void pv(T a, T b) { for (T i = a; i != b; i++) cerr << *i << " "; cerr << '\n'; }
+using pii = pair<int, int>;
+const int inf = 1e18;
+
+void solve() {
+    int n = read(), q = read();
+    string s; cin >> s;
+    s = " " + s;
+
+    int las = -1;
+    vector<int> sum(n + 5), pre(n + 5), suf(n + 5);
+    for (int i = 1; i <= n; i++) {
+        sum[i] = sum[i - 1];
+        if (s[i] == '1' and las != i - 1) {
+            sum[i]++, las = i;
+        }
+    }
+
+    for (int i = 1; i <= n; i++) {
+        if (s[i] == '1') {
+            suf[i] = suf[i - 1] + 1;
+        } else {
+            suf[i] = 0;
+        }
+    }
+    for (int i = n; i >= 1; i--) {
+        if (s[i] == '1') {
+            pre[i] = pre[i + 1] + 1;
+        } else {
+            pre[i] = 0;
+        }
+    }
+
+    while (q--) {
+        int l = read(), r = read();
+        auto calc = [&]() -> int {
+            int ll = l + pre[l], rr = r - suf[r];
+            if (ll >= rr) return (r - l + 1 + 1) / 2;
+            return sum[rr] - sum[ll - 1] + (pre[l] + suf[r] + 1) / 2;
+        };
+        int res = max(0LL, (r - l + 1) / 3 - calc());
+        cout << res << '\n';
+    }
+}
+
+signed main() {
+    // for (int T = read(); T--; solve());
+    solve();
+    return 0;
+}

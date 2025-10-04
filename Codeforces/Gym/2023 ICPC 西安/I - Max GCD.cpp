@@ -86,8 +86,8 @@ void solve() {
 
     vector<int> ans(n + 1);
     for (int r = 1; r <= n; r++) {
-        for (auto [l, g] : cand[r]) {
-            DS::update(l, g);
+        for (auto [l, d] : cand[r]) {
+            DS::update(l, d);
         }
         for (auto [l, id] : qry[r]) {
             ans[id] = DS::query(l);

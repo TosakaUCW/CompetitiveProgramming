@@ -73,14 +73,14 @@ void solve() {
     DS::init(n);
 
     vector<vector<pii>> cand(n + 1);
-    for (int g = 1; g <= M; g++) {
+    for (int d = 1; d <= M; d++) {
         vector<int> b;
-        for (int i : pos[g]) b.eb(i);
+        for (int i : pos[d]) b.eb(i);
         for (int i = 0; i + 1 < b.size(); i++) {
             int need = b[i + 1] * 2 - b[i];
             auto it = ranges::lower_bound(b, need);
             if (it == b.end()) continue;
-            cand[*it].eb(b[i], g);
+            cand[*it].eb(b[i], d);
         }
     }
 

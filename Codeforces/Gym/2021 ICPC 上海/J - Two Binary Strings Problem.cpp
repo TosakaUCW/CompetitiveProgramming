@@ -20,49 +20,54 @@ template <class T> void pv(T a, T b) { for (T i = a; i != b; i++) cerr << *i << 
 using pii = pair<int, int>;
 const int inf = 1e18;
 
-const int M = 3000;
+const int N = 5e4 + 5;
 
 void solve() {
     int n = read();
-    int k = read();
+    string a, b; cin >> a >> b;
+    a = " " + a, b = " " + b;
 
-    vector<pii> a(n);
-    for (auto &[v, t] : a) {
-        v = read(), t = read();
+    vector<int> s(n + 1);
+    for (int i = 1; i <= n; i++) {
+        s[i] = s[i - 1] + (a[i] == '0' ? -1 : 1);
     }
 
-    vector dp(M + 1000, vector(k + 1, -inf));
-    dp[0][0] = 0;
-    for (auto [v, t] : a) {
-        auto ndp = dp;
+    vector<int> p(n + 1);
+    ranges::iota(p, 0);
+    ranges::sort(p, [&](int i, int j) {
+        if (s[i] == s[j]) return i < j;
+        return s[i] > s[j];
+    });
 
-        for (int w = 0; w <= M; w++) {
-            for (int j = 0; j <= k; j++) {
+    bitset<N> bad, vis, mask;
+    for (int i = 1; i <= n; i++) mask.set(i);
 
-                auto upd = [&](int nw, int nj) -> void {
-                    nw = abs(nw);
-                    ndp[w][j] = max(ndp[w][j], dp[nw][nj] + v);
-                };
-
-                upd(w - t, j);
-                upd(w + t, j);
-                if (j >= 1) upd(w - 2 * t, j - 1);
-                if (j >= 1) upd(w + 2 * t, j - 1);
+    int tg = n + 1;
+    for (int i : p) {
+        if (i) {
+            if (b[i] == '1') {
+                bad |= (vis >> (n - i));
+                if (s[i] <= 0) tg = min(tg, i + 1);
+            } else {
+                bad |= ((vis ^ mask) >> (n - i));
+                if (s[i] > 0) tg = min(tg, i + 1);
             }
         }
-
-        dp = move(ndp);
+        vis[n - i] = 1;
     }
 
-    int ans = 0;
-    for (int j = 0; j <= k; j++) {
-        ans = max(ans, dp[0][j]);
+    for (int i = 1; i <= n; i++) {
+        if (bad[i] or i >= tg) {
+            cout << "0";
+        } else {
+            cout << "1";
+        }
     }
-    cout << ans << '\n';
+    cout << '\n';
 }
 
 signed main() {
-    // for (int T = read(); T--; solve());
-    solve();
+    for (int T = read(); T--; solve());
+    // solve();
     return 0;
 }
